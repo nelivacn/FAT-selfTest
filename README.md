@@ -4,14 +4,13 @@
 
 * 获取该项目到本地工作目录下并赋予文件所需权限
     ```bash
-    WORKDIR=/workspace
-    mkdir $WORKDIR
-    cd $WORKDIR
+    mkdir /workspace
+    cd /workspace
     mkdir projects tars
     cd /tmp
     git https://github.com/nelivacn/FAT.git
-    cp -r /tmp/FAT/test/selftest/ $WORKDIR
-    chmod -R 777 $WORKDIR/selftest/
+    cp -r /tmp/FAT/test/selftest/ /workspace
+    chmod -R 777 /workspace/selftest/
     ```
 
 * 修改 **docker.service** 文件 配置TCP远程访问
@@ -44,12 +43,12 @@
     docker pull nelivacn/fat:cuda11.4.3-centos7-baseV2024.1
     ```
 
-* 将需要测试的程序包上传至服务器 **$WORKDIR/tars/** 目录下
+* 将需要测试的程序包上传至服务器 **/workspace/tars/** 目录下
 
 * 启动测试服务
 
     ```bash
-    cd $WORKDIR/selftest/
+    cd /workspace/selftest/
     ./selfTest.sh start
     ```
 
