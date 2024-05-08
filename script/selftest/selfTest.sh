@@ -7,13 +7,10 @@ APP_FOLDER="${SHELL_FOLDER}"
 
 JAR_FILE="$APP_FOLDER/$APP_NAME-1.0.0.jar"
 
-JAVA_HOME='./jdk-11.0.18'
-
+JAVA_HOME='/jdk/'
 
 SPRING_PROFILE0='prod'
 
-
-#��ҪԶ�̵���ʱ���Ӳ�����ע��˿ڱ��ͻ
 REMOTE_DEBUG=''
 
 run_java(){

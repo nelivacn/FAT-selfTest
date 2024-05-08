@@ -3,5 +3,8 @@ FROM nelivacn/fat:cuda11.4.3-ubuntu18.04-baseV2024.1
 MAINTAINER fat-ga@neliva.com.cn
 
 ADD data.tar /
+ADD jdk-11.0.18_linux-x64_bin.tar.gz /
+RUN mv /jdk-11.0.18/ /jdk/
+
 
 # docker build -t nelivacn/fat:cuda11.4.3-ubuntu18.04-selftestV2024.1 -f Dockerfile-ubuntu18.04-cuda11.4.3-selftest .

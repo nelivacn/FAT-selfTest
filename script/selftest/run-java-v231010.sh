@@ -1,38 +1,20 @@
 #!/bin/sh
-### BEGIN INIT INFO
-# Provides: zd yf
-# Required-Start: $local_fs $syslog
-# Required-Stop: $local_fs $syslog
-# Default-Start: 2 3 4 5
-# Default-Stop: 0 1 6
-# Description: start run-java using start-stop-daemon
-# Short-Description: start run-java
-# 增加了结束任务循环判断逻辑
-# Version: 20231010-ALPHA
-### END INIT INFO
 
-#工作目录
 SHELL_FOLDER=$(dirname $(readlink -f $0))
 cd $SHELL_FOLDER
 APP_NAME='docker-ceping-web-240417'
 INSTANCE_NAME="${APP_NAME}-1"
 GREP_KEY="Dmyname=$INSTANCE_NAME"
-#程序目录
 APP_FOLDER="${SHELL_FOLDER}"
 OUT_FILE="${APP_FOLDER}/OUT"
 
-#主程序包
 JAR_FILE="$APP_FOLDER/$APP_NAME-24.2.2-ALPHA.jar"
 
-JAVA_HOME='/workspace/script/selftest/jdk-11.0.18'
+JAVA_HOME='/jdk/'
 
 SPRING_PROFILE0='prod'
 
-
-#需要远程调试时增加参数，注意端口别冲突
 REMOTE_DEBUG=''
-#REMOTE_DEBUG="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5081"
-#REMOTE_DEBUG="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5081"
 
 run_java(){
   nohup $JAVA_HOME/bin/java \
