@@ -7,7 +7,7 @@ APP_FOLDER="${SHELL_FOLDER}"
 
 JAR_FILE="$APP_FOLDER/$APP_NAME-1.0.0.jar"
 
-JAVA_HOME='/jdk/'
+JAVA_HOME='./jre/'
 
 SPRING_PROFILE0='prod'
 
