@@ -41,6 +41,7 @@
     ```
 
 * 获取镜像
+> selftest版本包含测试图片等依赖 正式测评使用base版本镜像
 
     ```bash
     docker pull nelivacn/fat:cuda12.2.2-ubuntu22.04-selftestV2024.1
