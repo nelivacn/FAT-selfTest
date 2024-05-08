@@ -1,0 +1,44 @@
+FROM msbrm/cuda:11.4.3-cudnn8-devel-ubuntu18.04
+
+MAINTAINER cuihaniss@gmail.com
+
+COPY Shanghai /etc/localtime
+ADD Python-3.10.12.tgz /
+
+RUN set -ex \
+    && echo 'Asia/Shanghai' > /etc/timezone \
+    && chmod 777 /tmp/ \
+    && rm -rf /etc/apt/sources.list.d/* \
+    && apt-get update -y \
+    && apt-get -y install libsm6 libxrender1 libxext-dev vim iputils-ping wget vim \
+    && apt-get -y install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev make \
+    && apt-get -y install systemd \
+    && ln -sf /lib/systemd/systemd /sbin/init \
+    && apt-get autoremove \ 
+    && apt-get clean
+
+RUN set -ex \
+    && cd Python-3.10.12 \
+    && ./configure prefix=/usr/local/python3 --enable-optimizations \
+    && make -j8\
+    && make install \
+    && make clean \
+    && rm -rf /Python-3.10.12* \
+    && ln -s /usr/local/python3/bin/python3.10 /usr/bin/python \
+    && ln -s /usr/local/python3/bin/pip3 /usr/bin/pip
+
+RUN set -ex \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyyaml \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple abcDict \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-python \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-python-headless \
+    && rm -rf /opt/nvidia/ \
+    && rm -rf ~/.cache/* \
+    && rm -rf /var/log/* /tmp/*
+
+WORKDIR /workspace
+
+ENTRYPOINT [ "/sbin/init" ]
+
+# docker build -t nelivacn/fat:cuda11.4.3-ubuntu18.04-baseV2024.1 -f Dockerfile-ubuntu18.04-cuda11.4.3-base .

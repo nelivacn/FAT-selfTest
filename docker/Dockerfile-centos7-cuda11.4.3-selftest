@@ -1,0 +1,7 @@
+FROM nelivacn/fat:cuda11.4.3-centos7-baseV2024.1
+
+MAINTAINER fat-ga@neliva.com.cn
+
+ADD data.tar /
+
+# docker build -t nelivacn/fat:cuda11.4.3-centos7-selftestV2024.1 -f Dockerfile-centos7-cuda11.4.3-selftest .

@@ -1,0 +1,52 @@
+FROM msbrm/cuda:12.2.2-cudnn8-devel-centos7
+
+MAINTAINER cuihaniss@gmail.com
+
+ADD openssl-1.1.1q.tar.gz /
+ADD Python-3.10.12.tgz /
+
+RUN set -ex \
+    && echo 'Asia/Shanghai' > /etc/timezone \
+    && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && rm -rf /etc/yum.repos.d/cuda.repo \
+    && yum update -y \
+    && yum install -y gcc gcc-c++ autoconf automake zlib zlib-devel pcre-devel wget vim \
+    && yum install -y ncurses-devel gdbm-devel xz-devel sqlite-devel tk-devel uuid-devel readline-devel bzip2-devel libffi-devel \
+    && yum clean all
+
+RUN set -ex \
+    && cd openssl-1.1.1q \
+    && ./config \
+    && make -j8 \
+    && make install \
+    && echo "/usr/local/lib64/" >> /etc/ld.so.conf \
+    && ldconfig \
+    && ln -s /usr/local/bin/openssl /usr/bin/openssl \
+    && cd /Python-3.10.12 \
+    && ./configure prefix=/usr/local/python3 \
+    && make -j8 \
+    && make install \
+    && make clean \
+    && rm -rf /Python-3.10.12* \
+    && rm -rf /openssl-1.1.1q* \
+    && rm -rf /usr/bin/python \
+    && ln -s /usr/local/python3/bin/python3.10 /usr/bin/python \
+    && ln -s /usr/local/python3/bin/pip3 /usr/bin/pip \
+    && sed -i "s#/usr/bin/python#/usr/bin/python2.7#" /usr/libexec/urlgrabber-ext-down \
+    && sed -i "s#/usr/bin/python#/usr/bin/python2.7#" /usr/bin/yum
+
+RUN set -ex \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyyaml \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple abcDict \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-python \
+    && python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-python-headless \
+    && rm -rf /opt/nvidia/ \
+    && rm -rf ~/.cache/* \
+    && rm -rf /var/log/* /tmp/*
+
+WORKDIR /workspace
+
+ENTRYPOINT [ "/sbin/init" ]
+
+# docker build -t nelivacn/fat:cuda12.2.2-centos7-baseV2024.1 -f Dockerfile-centos7-cuda12.2.2-base .

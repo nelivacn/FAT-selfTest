@@ -3,14 +3,13 @@
 > 主要测试内容：接口返回值格式、算法稳定性
 
 * 获取该项目到本地工作目录下并赋予文件所需权限
+
     ```bash
-    mkdir /workspace
-    cd /workspace
-    mkdir projects tars
     cd /tmp
-    git https://github.com/nelivacn/FAT.git
-    cp -r /tmp/FAT/test/selftest/ /workspace
-    chmod -R 777 /workspace/selftest/
+    git clone https://github.com/nelivacn/FAT-selfTest.git
+    mkdir -p /workspace/projects/ /workspace/tars/
+    cp -r /tmp/FAT-selfTest/script/ /workspace/
+    chmod -R 777 /workspace/script/
     ```
 
 * 修改 **docker.service** 文件 配置TCP远程访问
@@ -28,19 +27,19 @@
 * 获取镜像
 
     ```bash
-    docker pull nelivacn/fat:cuda12.2.2-ubuntu22.04-baseV2024.1
+    docker pull nelivacn/fat:cuda12.2.2-ubuntu22.04-selftestV2024.1
     ```
 
     ```bash
-    docker pull nelivacn/fat:cuda11.4.3-ubuntu18.04-baseV2024.1
+    docker pull nelivacn/fat:cuda11.4.3-ubuntu18.04-selftestV2024.1
     ```
 
     ```bash
-    docker pull nelivacn/fat:cuda12.2.2-centos7-baseV2024.1
+    docker pull nelivacn/fat:cuda12.2.2-centos7-selftestV2024.1
     ```
 
     ```bash
-    docker pull nelivacn/fat:cuda11.4.3-centos7-baseV2024.1
+    docker pull nelivacn/fat:cuda11.4.3-centos7-selftestV2024.1
     ```
 
 * 将需要测试的程序包上传至服务器 **/workspace/tars/** 目录下
@@ -48,13 +47,13 @@
 * 启动测试服务
 
     ```bash
-    cd /workspace/selftest/
+    cd /workspace/script/selftest/
     ./selfTest.sh start
     ```
 
 * 开始自助测试
 
-    1. 进入测试页面[http://127.0.0.1:8040/self/test](http://127.0.0.1:8040/self/test)
+    1. 进入测试页面[http://ip:8040/self/test](http://127.0.0.1:8040/self/test)
     2. 输入**镜像名称**与**程序包所在绝对路径**
     3. 点击**初始化**按钮并观察测试日志输出
     4. 如果需要授权请点击**下载**按钮下载指纹文件、**上传**按钮上传授权文件进行授权操作
@@ -64,7 +63,8 @@
 
     **浏览器不要刷新**
 
-    **重新测试需要重启测试服务./selfTest.sh start**
+    **重新测试需要重启测试服务./selfTest.sh restart**
 
     **该自助测试只涉及接口格式校验以及稳定性测试，不涉及任何性能测试**
+
 * 技术相关的问题请在[Issues](https://github.com/nelivacn/FAT-selfTest/issues)进行提问讨论
