@@ -358,7 +358,7 @@ def get_feature(pyfat_file, cfg):
         msg_info(f'fat_dir: {fat_dir}')
         msg_info('test get feature and get topk')
         DEVICE = [0]
-        gallery_file = cfg.gallery_file
+        gallery_file = Path(cfg.gallery_file)
         gallery_count = cfg.gallery_count
 
         from pyfat_implement import PyFAT
