@@ -213,9 +213,9 @@ if __name__ == '__main__':
     taskid=cfg.task_id
     result = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     [msg_info(i) for i in result.stdout.split('\n')]
-    pyfat_file = Path(sys.argv[1])
-    main(pyfat_file, cfg)
     if result.stderr:
         [msg_error(i) for i in result.stderr.split('\n')]
+    pyfat_file = Path(sys.argv[1])
+    main(pyfat_file, cfg)
 
 
