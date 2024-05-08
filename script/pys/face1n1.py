@@ -463,8 +463,8 @@ if __name__ == '__main__':
     time.sleep(.5)
     pyfat_file = Path(sys.argv[1])
     if test_count % 2:
-        msg_info(f'稳定性测试第{test_count}轮 全流程')
+        msg_info(f'检索稳定性测试第{test_count}轮 全流程')
         main(pyfat_file, cfg)
     else:
-        msg_info(f'稳定性测试第{test_count}轮 提特征')
+        msg_info(f'检索稳定性测试第{test_count}轮 提特征')
         get_feature(pyfat_file, cfg)
