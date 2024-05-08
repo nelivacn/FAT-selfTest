@@ -6,9 +6,17 @@
 
     ```bash
     cd /tmp
+    ```
+    ```bash
     git clone https://github.com/nelivacn/FAT-selfTest.git
+    ```
+    ```bash
     mkdir -p /workspace/projects/ /workspace/tars/
+    ```
+    ```bash
     cp -r /tmp/FAT-selfTest/script/ /workspace/
+    ```
+    ```bash
     chmod -R 777 /workspace/script/
     ```
 
@@ -16,11 +24,19 @@
 
     ```bash
     systemctl stop docker
+    ```
+    ```bash
     vim /lib/systemd/system/docker.service
+    ```
+    ```bash
     # [Service] ExecStart 项新增  -H tcp://0.0.0.0:2345
     # 例 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock -H tcp://0.0.0.0:2345
     # 保存退出
+    ```
+    ```bash
     systemctl daemon-reload
+    ```
+    ```bash
     systemctl start docker
     ```
 
@@ -48,6 +64,8 @@
 
     ```bash
     cd /workspace/script/selftest/
+    ```
+    ```bash
     ./selfTest.sh start
     ```
 
