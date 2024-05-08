@@ -211,6 +211,8 @@ if __name__ == '__main__':
     yaml_file = vechile.with_suffix('.yaml')
     cfg = AbcDict(yaml_file)
     taskid=cfg.task_id
+    test_count = int(sys.argv[-1])
+    msg_info(f'车辆稳定性测试第{test_count}轮')
     result = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     [msg_info(i) for i in result.stdout.split('\n')]
     if result.stderr:
