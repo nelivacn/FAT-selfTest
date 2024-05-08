@@ -1,5 +1,6 @@
 task_id: ${NELIVA_TASK_ID}
 ld_library_path: ${LD_LIBRARY_PATH}
+cuda_visible_devices: ${CUDA_VISIBLE_DEVICES}
 gallery_file: /data/faces_1n1/face_diku.txt
 gallery_count: 1530
 probe_file: /data/faces_1n1/face_tance.txt
