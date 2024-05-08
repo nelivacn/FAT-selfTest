@@ -1,0 +1,7 @@
+task_id: ${NELIVA_TASK_ID}
+ld_library_path: ${LD_LIBRARY_PATH}
+sample_file: /data/vechile/vechile.txt
+gallery_count: 1999
+probe_file: /data/
+probe_count: 100
+load_sample_item_num: 8
