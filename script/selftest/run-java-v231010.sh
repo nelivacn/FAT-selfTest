@@ -10,7 +10,7 @@ OUT_FILE="${APP_FOLDER}/OUT"
 
 JAR_FILE="$APP_FOLDER/$APP_NAME-24.2.2-ALPHA.jar"
 
-JAVA_HOME='/jdk/'
+JAVA_HOME='/workspace/script/selftest/jre/'
 
 SPRING_PROFILE0='prod'
 
