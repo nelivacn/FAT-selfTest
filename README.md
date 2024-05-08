@@ -59,6 +59,34 @@
     docker pull nelivacn/fat:cuda11.4.3-centos7-selftestV2024.1
     ```
 
+* 检验容器环境
+
+    ```bash
+    docker run -d --privileged --gpus all --ipc host --network host --name imageTest nelivacn/fat:cuda11.4.3-ubuntu18.04-selftestV2024.1
+    ```
+
+    ```bash
+    docker exec -it imageTest /bin/bash
+    ```
+
+    执行一些命令查看容器环境是否正常
+    ```bash
+    nvidia-smi && nvcc -V
+    ```
+
+    退出并关闭删除容器
+    ```bash
+    exit
+    ```
+    
+    ```bash
+    docker stop imageTest
+    ```
+    
+    ```bash
+    docker rm imageTest
+    ```
+
 * 将需要测试的程序包上传至服务器 **/workspace/tars/** 目录下
 
 * 启动测试服务
