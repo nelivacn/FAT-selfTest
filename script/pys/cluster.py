@@ -16,7 +16,6 @@ import numpy as np
 sys.path.append(str(Path(__file__).resolve().parent))
 from abcdict import AbcDict
 
-
 taskid = None
 
 def msg_info(info_str):
@@ -103,122 +102,8 @@ def get_feature_tester(fat, test_item_q, feat_q, gfbn):
     except Exception:
         [msg_error(i) for i in traceback.format_exc().split('\n')]
         os._exit(3)
-def get_feature(pyfat_file, cfg):
-    try:
-        TASK_ID = cfg.task_id
-        LD_LIBRARY_PATH = cfg.ld_library_path
-        fat_dir = pyfat_file.parent
-        assets_dir = str(fat_dir / 'assets')
-        sys.path.append(str(fat_dir))
-        msg_info(f'TASK_ID: {TASK_ID}')
-        msg_info(f'LD_LIBRARY_PATH: {LD_LIBRARY_PATH}')
-        msg_info(f'fat_dir: {fat_dir}')
-        msg_info('test get feature')
-        DEVICE = [0, 1]
-        gallery_file = cfg.gallery_file
-        gallery_count = cfg.gallery_count
-        # probe_file = cfg.probe_file
-        # probe_count = cfg.probe_count
 
-        from pyfat_implement import PyFAT
-        fat = PyFAT(cfg.gallery_count, 1)
-        msg_info('fat.load start')
-        msg_info(f'assets_dir: {assets_dir}, device: {DEVICE}')
-        fat.load(assets_dir, DEVICE)
-        msg_info('fat.get_feature_parallel_num start')
-        gfpn, gfbn = fat.get_feature_parallel_num()
-        #msg_error    c('fat.get_topk_parallel_num start')
-        # gtkpn, gtkbn = fat.get_topk_paquery_cluster_resrallel_num()
 
-        assert isinstance(gfpn, int),'get_feature_parallel_num 接口返回格式不对'
-        assert isinstance(gfbn, int),'get_feature_parallel_num 接口返回格式不对'
-
-        msg_info('fat.get_feature_len start')
-        get_feature_len_res = fat.get_feature_len()
-
-        assert isinstance(get_feature_len_res, int),'get_feature_len 接口返回格式不对'
-
-        load_sample_item_num = cfg.load_test_item_num
-        sample_item_q = Queue(1024)
-        feat_q = Queue(1024)
-        file2test_item_p_list = []
-        for i in range(load_sample_item_num):
-            file2test_item_p_list.append(
-                threading.Thread(
-                    target=file2q, args=(
-                        gallery_file, sample_item_q, i, load_sample_item_num
-                    )
-                )
-            )
-        for i in file2test_item_p_list:
-            i.start()
-
-        gallery_feat_q = Queue(1024)
-        q_list = [Queue(1024) for _ in range(gfpn)]
-        q2q_list_p = threading.Thread(
-            target=q2q_list, args=(
-                load_sample_item_num, gallery_count, sample_item_q, q_list
-            )
-        )
-        q2q_list_p.start()
-
-        p_list = []
-        for i in range(gfpn):
-            p_list.append(
-                threading.Thread(
-                    target=get_feature_tester, args=(fat, q_list[i],gallery_feat_q, gfbn)
-                )
-            )
-        for pp in p_list:
-            msg_info('in get_feature_tester')
-            pp.start()
-
-        insert_count, feat_none_count,= 0, 0
-        insert_time_list, progress_time_list, get_feature_time_list = [], [], []
-        progress_time = datetime.datetime.now()
-        feature2str_feature_list = []
-        feature2str_feature_count = 0
-        while True:
-            item = feat_q.get()
-            if item is None:
-                feat_none_count += 1
-                if feat_none_count == gfpn:
-                    if insert_count == gallery_count:
-                        break
-                    else:
-                        sys.exit(1)
-            else:
-                if feature2str_feature_count < 5000 and item[0]:
-                    feature2str_feature_list.append(item[1])
-                    feature2str_feature_count += 1
-                get_feature_time_list.append(item[2])
-
-                insert_start_time = datetime.datetime.now()
-                fat.insert_gallery(item[1], int(item[3][1]), 0, item[0])
-
-                insert_end_time = datetime.datetime.now()
-                insert_time_list.append((insert_end_time - insert_start_time).total_seconds())
-
-                progress_time_now = datetime.datetime.now()
-                progress_time_item = (progress_time_now - progress_time).total_seconds()
-
-                progress_time = progress_time_now
-                insert_count += 1
-                # get_feature_time_list.append(gftime)
-                progress_time_list.append(progress_time_item)
-                if insert_count % 200 == 0:
-                    mean_gf_item_time = np.array(get_feature_time_list).mean()
-                    tps_gf = 1. / mean_gf_item_time * gfpn * gfbn
-                    mean_progress_time = np.array(progress_time_list).mean()
-                    mean_insert_time = np.array(insert_time_list).mean()
-                    insert_time_list, progress_time_list, get_feature_time_list = [], [], []
-                    msg_info(f'提特征每秒数量: {tps_gf}, 接口平均响应时间: {mean_gf_item_time}')
-                    msg_info(f'fat.insert_gallery 平均响应时间: { mean_progress_time}')
-                    msg_info(f'建库全流程平均耗时: {mean_insert_time}')
-
-    except Exception as e:
-        [msg_error(i) for i in traceback.format_exc().split('\n')]
-        os._exit(3)
 def main(pyfat_file, cfg):
     try:
         TASK_ID = cfg.task_id
@@ -244,7 +129,6 @@ def main(pyfat_file, cfg):
         fat.load(assets_dir, DEVICE)
         msg_info('fat.get_feature_parallel_num start')
         gfpn, gfbn = fat.get_feature_parallel_num()
-
 
         assert isinstance(gfpn, int),'fat.get_feature_parallel_num 接口返回格式不对'
         assert isinstance(gfbn, int),'fat.get_feature_parallel_num 接口返回格式不对'
@@ -429,15 +313,12 @@ if __name__ == '__main__':
     taskid = cfg.task_id
     test_count = int(sys.argv[-1])
     pyfat_file = Path(sys.argv[1])
-    msg_info(f'稳定性测试第{test_count}轮')
+    msg_info(f'聚类稳定性测试第{test_count}轮')
     result = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     [msg_info(i) for i in result.stdout.split('\n')]
     if result.stderr:
         [msg_error(i) for i in result.stderr.split('\n')]
     time.sleep(.5)
-    if test_count < 25:
-        main(pyfat_file,cfg)
-    else:
-        get_feature(pyfat_file, cfg)
+    main(pyfat_file,cfg)
 
 
