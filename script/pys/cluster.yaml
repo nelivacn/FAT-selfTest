@@ -3,4 +3,3 @@ ld_library_path: ${LD_LIBRARY_PATH}
 gallery_file: /data/cluster/face_cluster.txt
 gallery_count: 2000
 load_test_item_num: 8
-ans_file : /data/cluster/face_cluster_ans.txt
