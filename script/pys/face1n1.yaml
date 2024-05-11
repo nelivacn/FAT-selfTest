@@ -4,5 +4,5 @@ cuda_visible_devices: ${CUDA_VISIBLE_DEVICES}
 gallery_file: /data/faces_1n1/face_diku.txt
 gallery_count: 1530
 probe_file: /data/faces_1n1/face_tance.txt
-probe_count: 537
+probe_count: 536
 load_test_item_num: 8

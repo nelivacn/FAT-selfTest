@@ -19,10 +19,8 @@ taskid = None
 def msg_info(info_str):
     print(f'{taskid}INFO:-{info_str}', flush=True)
 
-
 def msg_error(error_str):
     print(f'{taskid}ERROR:-{error_str}', file=sys.stderr, flush=True)
-
 
 def file2q(file_name: Path, q: Queue, index: int, p_num: int):
     try:
@@ -49,6 +47,7 @@ def q2q_list(in_None_num: int, all_item_num: int, in_q: Queue, out_q_list: List[
             item = in_q.get()
             if item is None:
                 none_count += 1
+                #print()
                 if none_count == in_None_num:
                     if index == all_item_num:
                         for outp in out_q_list:
@@ -64,10 +63,9 @@ def q2q_list(in_None_num: int, all_item_num: int, in_q: Queue, out_q_list: List[
                 else:
                     out_q_list[index % len_out].put(item)
                 index += 1
-    except Exception:
+    except Exception as e:
         [msg_error(i) for i in traceback.format_exc().split('\n')]
-        os._exit(1)
-
+        os._exit(2)
 
 def get_feature_tester(fat, test_item_q, feat_q, gfbn):
     try:
@@ -117,20 +115,25 @@ def get_topk_tester(fat, test_item_q, res_q, gtkbn):
                 _usable_list.append(_usable)
             stime = datetime.datetime.now()
             idxs, sims = fat.get_topk(_feat_data_list, _usable_list)
+
             assert isinstance(idxs, list) and isinstance(sims, list), 'fat.get_topk 接口返回格式不对'
             # assert 0.0 <= sims <= 1.0
             gtktime = (datetime.datetime.now() - stime).total_seconds()
+            # print(_feat_data_list)
+            # print(idxs, sims)
             for index in range(len(_feat_data_list)):
                 _item_inner = _item_list_inner[index]
                 _isSi = _item_inner[0]
-                _probe_pid = _item_inner[3][0]
+                _probe_pid = _item_inner[1]
                 _probe_imgid = _item_inner[3][1]
-                _probe_url = _item_inner[3][4]
-                _probe_cls = _item_inner[3][3]
+                _probe_url = _item_inner[3][0]
+                # _probe_cls = _item_inner[3][3]
+
                 _idx = idxs[index][0]
                 _sim = sims[index][0]
-                assert isinstance(_idx, np.int32) and isinstance(_sim, np.float32), 'fat.get_topk 接口返回格式不对'
-                res_item = [_isSi, f'{_probe_pid}_{_probe_imgid}', _probe_cls, _probe_url, gtktime, _idx, _sim]
+                # print(_idx,_sim)
+                # assert isinstance(_idx, np.int32) and isinstance(_sim, np.float32), 'fat.get_topk 接口返回格式不对'
+                res_item = [_isSi, f'{_probe_pid}_{_probe_imgid}', _probe_url, gtktime, _idx, _sim]
                 res_q.put(res_item)
 
         _item_list = []
@@ -325,11 +328,12 @@ def main(pyfat_file, cfg):
         for f2s_feat in feature2str_feature_list:
             f2st = datetime.datetime.now()
             feature_str = fat.feature_to_str([f2s_feat])
+            assert isinstance(feature_str, list), 'fat.feature_to_str 接口返回格式不对'
+
             f2stime = (datetime.datetime.now() - f2st).total_seconds()
             f2s_time_list.append(f2stime)
-            feat_str_ = feature_str[0]['feature']
-            quality_str_ = feature_str[0]['quality']
-            assert isinstance(feat_str_, str) and isinstance(quality_str_, str), 'fat.feature_to_str 接口返回格式不对'
+            # feat_str_ = feature_str[0]['feature']
+            # quality_str_ = feature_str[0]['quality']
 
             gst = datetime.datetime.now()
             sim = fat.get_sim(f2s_feat, feature2str_feature_list[0])
@@ -429,7 +433,7 @@ def get_feature(pyfat_file, cfg):
                     feature2str_feature_count += 1
                 get_feature_item_time_list.append(item[2])
                 _insert_item_time = datetime.datetime.now()
-                fat.insert_gallery(item[1], int(item[3][3]), int(item[3][3]), item[0])
+                fat.insert_gallery(item[1], int(item[3][1]), 0, item[0])
                 insert_gallery_item_time_list.append((datetime.datetime.now() - _insert_item_time).total_seconds())
                 insert_item_time_list.append((_insert_item_time - insert_item_time).total_seconds())
                 insert_item_time = _insert_item_time
