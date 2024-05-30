@@ -118,7 +118,6 @@ def main(pyfat_file, cfg):
 
         sample_file = cfg.sample_file
         sample_count = 0
-        DEVICE = [0, 1]
         with open(sample_file,'r') as r_file:
             while True:
                 line = r_file.readline()
@@ -128,10 +127,10 @@ def main(pyfat_file, cfg):
         msg_info('fat init start')
         from pyfat_implement import PyFAT
         msg_info('fat init start')
-        fat = PyFAT(cfg.gallery_count, 1)
+        fat = PyFAT()
         msg_info('fat.load start')
         msg_info(f'assets_dir: {assets_dir}, device: {DEVICE}')
-        fat.load(assets_dir, DEVICE)
+        fat.load(assets_dir)
         msg_info('fat.get_feature_parallel_num start')
         gfpn, gfbn = fat.get_info_parallel_num()
         assert isinstance(gfpn,int),'fat.get_info_parallel_num 接口返回格式不对'
