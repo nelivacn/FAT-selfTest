@@ -44,19 +44,19 @@
     **selftest** 版本包含测试图片等依赖 正式测评使用 **base** 版本镜像
 
     ```bash
-    docker pull nelivacn/fat:cuda12.2.2-ubuntu22.04-selftestV2024.2
+    docker pull nelivacn/fat:cuda12.2.2-ubuntu22.04-selftestV2024.1
     ```
 
     ```bash
-    docker pull nelivacn/fat:cuda11.4.3-ubuntu18.04-selftestV2024.2
+    docker pull nelivacn/fat:cuda11.4.3-ubuntu18.04-selftestV2024.1
     ```
 
     ```bash
-    docker pull nelivacn/fat:cuda12.2.2-centos7-selftestV2024.2
+    docker pull nelivacn/fat:cuda12.2.2-centos7-selftestV2024.1
     ```
 
     ```bash
-    docker pull nelivacn/fat:cuda11.4.3-centos7-selftestV2024.2
+    docker pull nelivacn/fat:cuda11.4.3-centos7-selftestV2024.1
     ```
 
 * 检验容器环境
