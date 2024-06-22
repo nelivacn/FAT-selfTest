@@ -1,8 +1,6 @@
 import os
 import sys
-import json
 import time
-import logging
 import datetime
 import traceback
 import subprocess
@@ -18,28 +16,35 @@ from abcdict import AbcDict
 
 taskid = None
 
+
 def msg_info(info_str):
     print(f'{taskid}INFO:-{info_str}', flush=True)
+
+
 def msg_error(error_str):
     print(f'{taskid}ERROR:-{error_str}', file=sys.stderr, flush=True)
 
-def file2q(file_name: Path, q: Queue, index: int, p_num: int):
+
+def file2q(file_name: str, q: Queue, index: int, p_num: int):
     try:
         line_index = 0
-        with open(file_name,'r') as r_file:
-            while True:
-                line = r_file.readline()
-                count=0
-                if not line:
-                    break
+        with open(file_name, 'r') as r_file:
+            while line := r_file.readline():
                 if line_index % p_num == index:
                     item = line.strip().split()
                     q.put(item)
                 line_index += 1
-            q.put(None)
+        with open(file_name, 'r') as r_file:
+            while line := r_file.readline():
+                if line_index % p_num == index:
+                    item = line.strip().split()
+                    q.put(item)
+                line_index += 1
+        q.put(None)
     except Exception:
         [msg_error(i) for i in traceback.format_exc().split('\n')]
         os._exit(1)
+
 
 def q2q_list(in_None_num: int, all_item_num: int, in_q: Queue, out_q_list: List[Queue]):
     try:
@@ -48,9 +53,7 @@ def q2q_list(in_None_num: int, all_item_num: int, in_q: Queue, out_q_list: List[
             item = in_q.get()
             if item is None:
                 none_count += 1
-                #print()
                 if none_count == in_None_num:
-                    # print(index , all_item_num)
                     if index == all_item_num:
                         for outp in out_q_list:
                             outp.put(None)
@@ -65,9 +68,11 @@ def q2q_list(in_None_num: int, all_item_num: int, in_q: Queue, out_q_list: List[
                 else:
                     out_q_list[index % len_out].put(item)
                 index += 1
-    except Exception as e:
+    except Exception:
         [msg_error(i) for i in traceback.format_exc().split('\n')]
         os._exit(2)
+
+
 def get_feature_tester(fat, test_item_q, feat_q, gfbn):
     try:
         def get_feature_batch(fat, feat_q, inner_item_list):
@@ -77,12 +82,12 @@ def get_feature_tester(fat, test_item_q, feat_q, gfbn):
                 _img_data_list.append(_img_data)
             stime = datetime.datetime.now()
             _isS, _feat = fat.get_feature(_img_data_list)
-            assert isinstance(_isS, list) and isinstance(_feat, list),'fat.get_feature 接口返回不对'
+            assert isinstance(_isS, list) and isinstance(_feat, list), 'fat.get_feature 接口返回不对'
             gftime = (datetime.datetime.now() - stime).total_seconds()
             for index in range(len(_img_data_list)):
                 _isSi = _isS[index]
                 _feati = _feat[index]
-                assert isinstance(_isSi,bool) and isinstance(_feati, np.ndarray), 'fat.get_feature 接口返回不对'
+                assert isinstance(_isSi, bool) and isinstance(_feati, np.ndarray), 'fat.get_feature 接口返回不对'
                 _test_itemi = inner_item_list[index]
                 reitem = [_isSi, _feati, gftime, _test_itemi]
                 feat_q.put(reitem)
@@ -116,25 +121,25 @@ def main(pyfat_file, cfg):
         msg_info(f'fat_dir: {fat_dir}')
         DEVICE = [0, 1]
         gallery_file = cfg.gallery_file
-        gallery_count = cfg.gallery_count
+        gallery_count = cfg.gallery_count * 2
 
         from pyfat_implement import PyFAT
 
         msg_info('fat init start')
-        fat = PyFAT(cfg.gallery_count)
+        fat = PyFAT(gallery_count)
         msg_info('fat.load start')
         msg_info(f'assets_dir: {assets_dir}, device: {DEVICE}')
         fat.load(assets_dir, DEVICE)
         msg_info('fat.get_feature_parallel_num start')
         gfpn, gfbn = fat.get_feature_parallel_num()
 
-        assert isinstance(gfpn, int),'fat.get_feature_parallel_num 接口返回格式不对'
-        assert isinstance(gfbn, int),'fat.get_feature_parallel_num 接口返回格式不对'
+        assert isinstance(gfpn, int), 'fat.get_feature_parallel_num 接口返回格式不对'
+        assert isinstance(gfbn, int), 'fat.get_feature_parallel_num 接口返回格式不对'
 
         msg_info('fat.get_feature_len start')
         get_feature_len_res = fat.get_feature_len()
 
-        assert isinstance(get_feature_len_res, int),'fat.get_feature_len 接口返回格式不对'
+        assert isinstance(get_feature_len_res, int), 'fat.get_feature_len 接口返回格式不对'
 
         load_sample_item_num = cfg.load_test_item_num
         sample_item_q = Queue(1024)
@@ -174,7 +179,6 @@ def main(pyfat_file, cfg):
 
         insert_count, feat_none_count, = 0, 0
         insert_time_list, progress_time_list, get_feature_time_list = [], [], []
-        save_insert_time_list = []
         progress_time = datetime.datetime.now()
         isFirst = True
         imgid_idx_map = {}
@@ -239,12 +243,11 @@ def main(pyfat_file, cfg):
         fat.unload_feature()
         cluster_start_time = datetime.datetime.now()
         start_cluster = fat.start_cluster()
-        assert isinstance(start_cluster, bool),'fat.start_cluster 接口返回格式不对'
-
+        assert isinstance(start_cluster, bool), 'fat.start_cluster 接口返回格式不对'
 
         while True:
             progress_cluster = fat.query_progress_cluster()
-            assert isinstance(progress_cluster, int),'fat.query_progress_cluster 接口返回格式不对'
+            assert isinstance(progress_cluster, int), 'fat.query_progress_cluster 接口返回格式不对'
             save_cluster_time = (datetime.datetime.now() - cluster_start_time).total_seconds()
             # assert save_cluster_time <=21600,'fat.query_progress_cluster 接口返回函数调用平均响应时间限制超出范围'
             msg_info(f'fat.query_progress_cluster接口返回函数调用平均响应时间:{save_cluster_time}')
@@ -254,19 +257,19 @@ def main(pyfat_file, cfg):
         qcr_time_list, qcr_count = [], 0
         save_qcr_time_list = []
 
-        _idx=imgid_idx_map.values()
+        _idx = imgid_idx_map.values()
 
-        for idx_  in _idx:
+        for idx_ in _idx:
             qcr_start_time = datetime.datetime.now()
             qcr_cluster_id = fat.query_cluster_res(idx_)
-            assert isinstance(qcr_cluster_id, int),'query_cluster_res 接口返回格式不对'
+            assert isinstance(qcr_cluster_id, int), 'query_cluster_res 接口返回格式不对'
             qcr_time_list.append((datetime.datetime.now() - qcr_start_time).total_seconds())
             qcr_count += 1
             if qcr_count % 200 == 0:
                 mean_qcr_time = np.array(qcr_time_list).mean()
                 if qcr_count % 2000 == 0:
                     save_qcr_time_list.append(mean_qcr_time)
-        mean_save_qcr_time = np.mean(np.array(save_qcr_time_list))#函数调用平均响应时间限制
+        mean_save_qcr_time = np.mean(np.array(save_qcr_time_list))  # 函数调用平均响应时间限制
         # assert mean_save_qcr_time <= 0.002,'query_cluster_res 接口返回函数调用平均响应时间限制超出范围'
         msg_info(f'query_cluster_res接口返回函数调用平均响应时间:{mean_save_qcr_time}')
         qaoc_time_list, qaoc_count, save_qaoc_time_list = [], 0, []
@@ -274,17 +277,16 @@ def main(pyfat_file, cfg):
         cluster_idxs = fat.get_all_clusters()
         clusters_num = fat.get_clusters_num()
 
-        assert isinstance(cluster_idxs,list),'fat.get_all_clusters 接口返回格式不对'
-        assert isinstance(clusters_num,int),' fat.get_clusters_num 接口返回格式不对'
+        assert isinstance(cluster_idxs, list), 'fat.get_all_clusters 接口返回格式不对'
+        assert isinstance(clusters_num, int), 'fat.get_clusters_num 接口返回格式不对'
         fat.unload_cluster()
         for idxi in cluster_idxs:
             qaoc_start_time = datetime.datetime.now()
             this_cluster_idx = fat.query_all_of_cluster(idxi)
-            assert isinstance(this_cluster_idx,list),'fat.query_all_of_cluster 接口返回格式不对'
+            assert isinstance(this_cluster_idx, list), 'fat.query_all_of_cluster 接口返回格式不对'
             qaoc_time_list.append((datetime.datetime.now() - qaoc_start_time).total_seconds())
-            # print('11111111111',qaoc_time_list)
             cluster_size = fat.query_num_of_cluster(idxi)
-            assert isinstance( cluster_size, int), 'fat.query_num_of_cluster 接口返回格式不对'
+            assert isinstance(cluster_size, int), 'fat.query_num_of_cluster 接口返回格式不对'
             main_id = fat.query_cover_idx(idxi)
             assert isinstance(main_id, int), 'fat.query_cover_idx 接口返回格式不对'
             qaoc_count += 1
@@ -296,9 +298,10 @@ def main(pyfat_file, cfg):
         # assert mean_save_qaoc_time <= 0.002, 'fat.query_all_of_cluster 接口返回函数调用平均响应时间限制超出范围'
         msg_info(f'fat.query_all_of_cluster接口返回函数调用平均响应时间:{mean_save_qaoc_time}')
 
-    except Exception as e:
+    except Exception:
         [msg_error(i) for i in traceback.format_exc().split('\n')]
         os._exit(3)
+
 
 if __name__ == '__main__':
     cluster_file = Path(sys.argv[0])
@@ -313,6 +316,4 @@ if __name__ == '__main__':
     if result.stderr:
         [msg_error(i) for i in result.stderr.split('\n')]
     time.sleep(.5)
-    main(pyfat_file,cfg)
-
-
+    main(pyfat_file, cfg)

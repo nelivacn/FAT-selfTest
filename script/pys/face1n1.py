@@ -19,8 +19,10 @@ taskid = None
 def msg_info(info_str):
     print(f'{taskid}INFO:-{info_str}', flush=True)
 
+
 def msg_error(error_str):
     print(f'{taskid}ERROR:-{error_str}', file=sys.stderr, flush=True)
+
 
 def file2q(file_name: Path, q: Queue, index: int, p_num: int):
     try:
@@ -47,7 +49,6 @@ def q2q_list(in_None_num: int, all_item_num: int, in_q: Queue, out_q_list: List[
             item = in_q.get()
             if item is None:
                 none_count += 1
-                #print()
                 if none_count == in_None_num:
                     if index == all_item_num:
                         for outp in out_q_list:
@@ -63,9 +64,10 @@ def q2q_list(in_None_num: int, all_item_num: int, in_q: Queue, out_q_list: List[
                 else:
                     out_q_list[index % len_out].put(item)
                 index += 1
-    except Exception as e:
+    except Exception:
         [msg_error(i) for i in traceback.format_exc().split('\n')]
         os._exit(2)
+
 
 def get_feature_tester(fat, test_item_q, feat_q, gfbn):
     try:
