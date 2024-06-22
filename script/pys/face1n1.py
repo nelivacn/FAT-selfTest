@@ -412,11 +412,7 @@ def get_feature(pyfat_file, cfg):
 
         insert_count = 0
         gallery_feat_none_count = 0
-        insert_item_time_list, insert_gallery_item_time_list = [], []
         get_feature_item_time_list = []
-        insert_item_time = datetime.datetime.now()
-        feature2str_feature_list = []
-        feature2str_feature_count = 0
 
         while True:
             item = gallery_feat_q.get()
@@ -428,26 +424,13 @@ def get_feature(pyfat_file, cfg):
                     else:
                         sys.exit(1)
             else:
-                if feature2str_feature_count < 5000 and item[0]:
-                    feature2str_feature_list.append(item[1])
-                    feature2str_feature_count += 1
                 get_feature_item_time_list.append(item[2])
-                _insert_item_time = datetime.datetime.now()
-                fat.insert_gallery(item[1], int(item[3][1]), 0, item[0])
-                insert_gallery_item_time_list.append((datetime.datetime.now() - _insert_item_time).total_seconds())
-                insert_item_time_list.append((_insert_item_time - insert_item_time).total_seconds())
-                insert_item_time = _insert_item_time
                 insert_count += 1
                 if insert_count % 200 == 0:
                     mean_gf_item_time = np.array(get_feature_item_time_list).mean()
                     tps_gf = 1. / mean_gf_item_time * gfpn * gfbn
-                    mean_insert_item_time = np.array(insert_item_time_list).mean()
-                    mean_insert_gallery_item_time = np.array(insert_gallery_item_time_list).mean()
-                    get_feature_item_time_list, insert_item_time_list = [], []
-                    insert_gallery_item_time_list = []
+                    get_feature_item_time_list = []
                     msg_info(f'提特征每秒数量: {tps_gf}, 接口平均响应时间: {mean_gf_item_time}')
-                    msg_info(f'fat.insert_gallery 平均响应时间: {mean_insert_gallery_item_time}')
-                    msg_info(f'建库全流程平均耗时: {mean_insert_item_time}')
     except Exception:
         [msg_error(i) for i in traceback.format_exc().split('\n')]
 
