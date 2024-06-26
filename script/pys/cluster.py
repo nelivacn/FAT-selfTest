@@ -279,7 +279,6 @@ def main(pyfat_file, cfg):
 
         assert isinstance(cluster_idxs, list), 'fat.get_all_clusters 接口返回格式不对'
         assert isinstance(clusters_num, int), 'fat.get_clusters_num 接口返回格式不对'
-        fat.unload_cluster()
         for idxi in cluster_idxs:
             qaoc_start_time = datetime.datetime.now()
             this_cluster_idx = fat.query_all_of_cluster(idxi)
@@ -297,6 +296,7 @@ def main(pyfat_file, cfg):
         mean_save_qaoc_time = np.mean(np.array(qaoc_time_list))
         # assert mean_save_qaoc_time <= 0.002, 'fat.query_all_of_cluster 接口返回函数调用平均响应时间限制超出范围'
         msg_info(f'fat.query_all_of_cluster接口返回函数调用平均响应时间:{mean_save_qaoc_time}')
+        fat.unload_cluster()
 
     except Exception:
         [msg_error(i) for i in traceback.format_exc().split('\n')]
