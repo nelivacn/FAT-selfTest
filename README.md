@@ -41,23 +41,12 @@
     ```
 
 * 获取镜像
-    **selftest** 版本包含测试图片等依赖 正式测评使用 **base** 版本镜像
 
-    ```bash
-    docker pull nelivacn/fat:cuda12.2.2-ubuntu22.04-selftestV2024.1
-    ```
+SZT2024镜像文件（T4）
+链接：https://pan.baidu.com/s/18rnQSqAWkJOrfy-ZBivolw?pwd=hflw 
+提取码：hflw 
 
-    ```bash
-    docker pull nelivacn/fat:cuda11.4.3-ubuntu18.04-selftestV2024.1
-    ```
-
-    ```bash
-    docker pull nelivacn/fat:cuda12.2.2-centos7-selftestV2024.1
-    ```
-
-    ```bash
-    docker pull nelivacn/fat:cuda11.4.3-centos7-selftestV2024.1
-    ```
+docker load -i 镜像文件
 
 * 检验容器环境
 
