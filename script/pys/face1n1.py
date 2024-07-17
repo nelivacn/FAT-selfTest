@@ -318,7 +318,7 @@ def main(pyfat_file, cfg):
                     else:
                         sys.exit(1)
             else:
-                get_topk_time_time_list.append(item[4])
+                get_topk_time_time_list.append(item[3])
 
                 retrieval += 1
                 if retrieval % 200 == 0:
