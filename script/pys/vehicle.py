@@ -116,8 +116,6 @@ def main(pyfat_file, cfg):
         msg_info(f'LD_LIBRARY_PATH: {LD_LIBRARY_PATH}')
         msg_info(f'fat_dir: {fat_dir}')
 
-	
-        DEVICE = [0]
         sample_file = cfg.sample_file
         sample_count = 0
         with open(sample_file,'r') as r_file:
@@ -131,7 +129,7 @@ def main(pyfat_file, cfg):
         msg_info('fat init start')
         fat = PyFAT()
         msg_info('fat.load start')
-        msg_info(f'assets_dir: {assets_dir}, device: {DEVICE}')
+        msg_info(f'assets_dir: {assets_dir}')
         fat.load(assets_dir)
         msg_info('fat.get_feature_parallel_num start')
         gfpn, gfbn = fat.get_info_parallel_num()
