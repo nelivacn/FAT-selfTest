@@ -72,7 +72,7 @@ def get_info_tester(fat,test_item_q, res_q, gfbn):
                 _img_data = cv2.imread(_i[0], cv2.IMREAD_COLOR)
                 poin_list = _i[0].split('/')[-1].split('.')[0].split('_')
                 x1,y1,x2,y2 =  poin_list[1], poin_list[2],poin_list[3],poin_list[4]
-                _img_data =_img_data[int(y1):int(y2),int(x1):int(x2)]
+                # _img_data =_img_data[int(y1):int(y2),int(x1):int(x2)]
                 _img_data_list.append(_img_data)
                 _pts1_list.append((int(x1), int(y1)))
                 _pts2_list.append((int(x2), int(y2)))
