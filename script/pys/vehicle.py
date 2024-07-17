@@ -116,6 +116,8 @@ def main(pyfat_file, cfg):
         msg_info(f'LD_LIBRARY_PATH: {LD_LIBRARY_PATH}')
         msg_info(f'fat_dir: {fat_dir}')
 
+	
+        DEVICE = [0]
         sample_file = cfg.sample_file
         sample_count = 0
         with open(sample_file,'r') as r_file:
